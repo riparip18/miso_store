@@ -1,4 +1,3 @@
-import { NetlifyFunction } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
 export const handler = async (event) => {

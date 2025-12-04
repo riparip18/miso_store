@@ -15,7 +15,7 @@
     "@mantine/hooks": "^7.13.5",
     "@tabler/icons-react": "^3.19.0",
     "@netlify/functions": "^2.6.0",
-    "@netlify/blobs": "^6.6.0"
+    "@netlify/blobs": "^6.4.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
