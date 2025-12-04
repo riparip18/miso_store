@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { api } from './src/api.js';
 import {
   MantineProvider,
   Container,
@@ -42,17 +43,57 @@ const theme = createTheme({
 // --- Main App Component ---
 export default function FishSalesApp() {
   // --- State Data Dummy Awal ---
-  const [inventory, setInventory] = useState([
-    { id: 1, name: 'King Jelly', qty: 50, buyPrice: 5000 },
-    { id: 2, name: 'Megalodon', qty: 10, buyPrice: 15000 },
-  ]);
+  // Load persisted data (if any) from localStorage
+  const initialInventory = (() => {
+    try {
+      const raw = localStorage.getItem('inventory');
+      return raw ? JSON.parse(raw) : [
+        { id: 1, name: 'King Jelly', qty: 50, buyPrice: 5000 },
+        { id: 2, name: 'Megalodon', qty: 10, buyPrice: 15000 },
+      ];
+    } catch {
+      return [
+        { id: 1, name: 'King Jelly', qty: 50, buyPrice: 5000 },
+        { id: 2, name: 'Megalodon', qty: 10, buyPrice: 15000 },
+      ];
+    }
+  })();
 
-  const [transactions, setTransactions] = useState([
-    { id: 1, item: 'King Jelly', qty: 2, price: 10000, status: 'Paid', date: '2025-12-01' },
-    { id: 2, item: 'Megalodon', qty: 1, price: 20000, status: 'Paid', date: '2025-12-01' },
-    { id: 3, item: 'Megalodon', qty: 1, price: 20000, status: 'Waiting', date: '2025-12-02' },
-    { id: 4, item: 'Tumbal', qty: 43, price: 3500, status: 'Paid', date: '2025-12-02' },
-  ]);
+  const initialTransactions = (() => {
+    try {
+      const raw = localStorage.getItem('transactions');
+      return raw ? JSON.parse(raw) : [
+        { id: 1, item: 'King Jelly', qty: 2, price: 10000, status: 'Paid', date: '2025-12-01' },
+        { id: 2, item: 'Megalodon', qty: 1, price: 20000, status: 'Paid', date: '2025-12-01' },
+        { id: 3, item: 'Megalodon', qty: 1, price: 20000, status: 'Waiting', date: '2025-12-02' },
+        { id: 4, item: 'Tumbal', qty: 43, price: 3500, status: 'Paid', date: '2025-12-02' },
+      ];
+    } catch {
+      return [
+        { id: 1, item: 'King Jelly', qty: 2, price: 10000, status: 'Paid', date: '2025-12-01' },
+        { id: 2, item: 'Megalodon', qty: 1, price: 20000, status: 'Paid', date: '2025-12-01' },
+        { id: 3, item: 'Megalodon', qty: 1, price: 20000, status: 'Waiting', date: '2025-12-02' },
+        { id: 4, item: 'Tumbal', qty: 43, price: 3500, status: 'Paid', date: '2025-12-02' },
+      ];
+    }
+  })();
+
+  const [inventory, setInventory] = useState(initialInventory);
+  const [transactions, setTransactions] = useState(initialTransactions);
+
+  // Load from backend on mount (overrides local defaults if present)
+  useEffect(() => {
+    (async () => {
+      try {
+        const inv = await api.getInventory();
+        if (Array.isArray(inv)) setInventory(inv);
+        const txs = await api.getTransactions();
+        if (Array.isArray(txs)) setTransactions(txs);
+      } catch {
+        // If functions not available locally, keep localStorage fallback
+      }
+    })();
+  }, []);
 
   // --- Form States ---
   const today = new Date().toISOString().split('T')[0];
@@ -101,7 +142,10 @@ export default function FishSalesApp() {
           : inv
       ));
       
-      setTransactions([...transactions, { ...newSale, id: Date.now() }]);
+      const newTx = { ...newSale, id: Date.now() };
+      setTransactions([...transactions, newTx]);
+      // Best-effort backend write
+      api.addTransaction(newTx).catch(() => {});
       setNewSale({ item: '', qty: 1, price: 0, status: 'Paid', date: today });
     } else {
       alert('Stock tidak cukup!');
@@ -110,23 +154,43 @@ export default function FishSalesApp() {
 
   const handleAddStock = () => {
     if (!newStock.name || newStock.qty < 0 || newStock.buyPrice < 0) return;
-    setInventory([...inventory, { ...newStock, id: Date.now() }]);
+    const newItem = { ...newStock, id: Date.now() };
+    setInventory([...inventory, newItem]);
+    api.addInventory(newItem).catch(() => {});
     setNewStock({ name: '', qty: 0, buyPrice: 0 });
   };
 
   const deleteTransaction = (id) => {
     setTransactions(transactions.filter(t => t.id !== id));
+    api.deleteTransaction(id).catch(() => {});
   };
 
   const deleteInventory = (id) => {
     setInventory(inventory.filter(t => t.id !== id));
+    api.deleteInventory(id).catch(() => {});
   };
 
   const updateTransactionStatus = (id) => {
-    setTransactions(transactions.map(t => 
+    const next = transactions.map(t => 
       t.id === id ? { ...t, status: t.status === 'Paid' ? 'Waiting' : 'Paid' } : t
-    ));
+    );
+    setTransactions(next);
+    const updated = next.find(t => t.id === id);
+    if (updated) api.updateTransaction(updated).catch(() => {});
   };
+
+  // Persist to localStorage when data changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('inventory', JSON.stringify(inventory));
+    } catch {}
+  }, [inventory]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+    } catch {}
+  }, [transactions]);
 
   // --- Filter Logic ---
   const filteredTransactions = transactions.filter(t => {
