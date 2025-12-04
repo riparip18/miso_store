@@ -8,6 +8,9 @@
 # (Add plugins here if you decide later)
 
 [dev]
+  # Netlify Dev proxy server port (must differ from Vite's port)
+  port = 8888
+  # Command to start the framework dev server (Vite)
   command = "npm run dev"
-  port = 5173
-  publish = "dist"
+  # Vite's dev server port (default 5173)
+  targetPort = 5173
