@@ -1,4 +1,4 @@
 {
   "miso_store:inventory": "[{\"name\":\"King jelly\",\"qty\":5,\"buyPrice\":9000,\"id\":1764931959771}]",
-  "miso_store:transactions": "[{\"item\":\"King jelly\",\"qty\":1,\"price\":9000,\"status\":\"Waiting\",\"date\":\"2025-12-05\",\"id\":1764949511107}]"
+  "miso_store:transactions": "[{\"item\":\"King jelly\",\"qty\":1,\"price\":9000,\"status\":\"Waiting\",\"date\":\"2025-12-05\",\"id\":1764949511107},{\"item\":\"123\",\"qty\":1,\"price\":123,\"status\":\"Waiting\",\"date\":\"2025-12-05\",\"id\":1764949783732},{\"item\":\"123\",\"qty\":112312,\"price\":3,\"status\":\"Waiting\",\"date\":\"2025-12-05\",\"id\":1764949786023},{\"item\":\"123\",\"qty\":11231,\"price\":231203,\"status\":\"Waiting\",\"date\":\"2025-12-05\",\"id\":1764949789822},{\"item\":\"1231\",\"qty\":123123,\"price\":12321,\"status\":\"Waiting\",\"date\":\"2025-12-05\",\"id\":1764949796161},{\"item\":\"23\",\"qty\":11231,\"price\":23,\"status\":\"Waiting\",\"date\":\"2025-12-05\",\"id\":1764949798204},{\"item\":\"1231\",\"qty\":1231,\"price\":23,\"status\":\"Waiting\",\"date\":\"2025-12-05\",\"id\":1764949799824}]"
 }

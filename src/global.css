@@ -5,5 +5,14 @@
 	}
 }
 html, body, #root { min-height: 100vh; }
-body { margin: 0; background: linear-gradient(180deg,#f8f9ff 0%,#f5f7ff 50%,#ffeef2 100%); -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: linear-gradient(180deg,#f8f9ff 0%,#f5f7ff 50%,#ffeef2 100%); -webkit-font-smoothing: antialiased; overflow-y: auto; }
 * { box-sizing: border-box; }
+
+/* Fix table scroll on mobile - prevent body scroll lock */
+@media (max-width: 48em) {
+  body { 
+    overflow: auto !important;
+    position: relative !important;
+    height: auto !important;
+  }
+}

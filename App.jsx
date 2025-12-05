@@ -587,8 +587,8 @@ export default function FishSalesApp() {
             </Group>
 
             <Paper withBorder radius="xl" shadow="sm" bg="white">
-              <ScrollArea style={{ maxHeight: 420 }} type="always">
-              <Table highlightOnHover verticalSpacing="sm" horizontalSpacing="lg" withColumnBorders={false}>
+              <ScrollArea h={420} type="scroll">
+              <Table highlightOnHover verticalSpacing="sm" horizontalSpacing="lg" withColumnBorders={false} style={{ minWidth: 700 }}>
                 <Table.Thead style={{ background: '#f8f9fa', boxShadow: 'inset 0 -1px 0 #edf2f7' }}>
                   <Table.Tr>
                     <Table.Th fw={700} c="dark" style={{ position: 'sticky', top: 0, background: '#f8f9fa', zIndex: 1 }}>Date</Table.Th>
@@ -686,15 +686,16 @@ export default function FishSalesApp() {
                 />
               </Paper>
 
-              <Paper withBorder radius="md" shadow="sm" overflow="hidden" bg="white">
-              <Table highlightOnHover verticalSpacing="md" horizontalSpacing="lg" style={{ tableLayout: 'fixed' }}>
-                <Table.Thead style={{ background: '#f8f9fa' }}>
+              <Paper withBorder radius="md" shadow="sm" bg="white">
+              <ScrollArea h={500} type="scroll">
+              <Table highlightOnHover verticalSpacing="md" horizontalSpacing="lg" style={{ minWidth: 600 }}>
+                <Table.Thead style={{ background: '#f8f9fa', position: 'sticky', top: 0, zIndex: 1 }}>
                   <Table.Tr>
-                    <Table.Th fw={600} c="dark">item</Table.Th>
-                    <Table.Th fw={700} c="dark" style={{ textAlign: 'right' }}>Stock</Table.Th>
-                    <Table.Th fw={700} c="dark" style={{ textAlign: 'right' }}>Cost Price</Table.Th>
-                    <Table.Th fw={800} c="dark" style={{ textAlign: 'right' }}>Total Value</Table.Th>
-                    <Table.Th style={{ width: 72, textAlign: 'center' }}></Table.Th>
+                    <Table.Th fw={600} c="dark" style={{ minWidth: 150 }}>Item</Table.Th>
+                    <Table.Th fw={700} c="dark" style={{ textAlign: 'right', width: 100 }}>Stock</Table.Th>
+                    <Table.Th fw={700} c="dark" style={{ textAlign: 'right', width: 120 }}>Cost Price</Table.Th>
+                    <Table.Th fw={800} c="dark" style={{ textAlign: 'right', width: 130 }}>Total Value</Table.Th>
+                    <Table.Th style={{ width: 90, textAlign: 'center' }}></Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
@@ -705,7 +706,7 @@ export default function FishSalesApp() {
                       <Table.Td c="dimmed" size="sm" ta="right">{toIDR(item.buyPrice)}</Table.Td>
                       <Table.Td fw={800} c="dark" ta="right">{toIDR(item.qty * item.buyPrice)}</Table.Td>
                       <Table.Td ta="center">
-                        <Group gap="xs" justify="center">
+                        <Group gap="xs" justify="center" wrap="nowrap">
                           <ActionIcon color="blue" variant="light" radius="xl" onClick={() => startEditInventory(item)}>✎</ActionIcon>
                           <ActionIcon color="gray" variant="light" radius="xl" onClick={() => deleteInventory(item.id)}>
                             <IconTrash size={16} />
@@ -714,8 +715,16 @@ export default function FishSalesApp() {
                       </Table.Td>
                     </Table.Tr>
                   ))}
+                  {filteredInventory.length === 0 && (
+                    <Table.Tr>
+                      <Table.Td colSpan={5} ta="center" py="xl" c="dimmed" fw={600}>
+                        No inventory items. Start adding!
+                      </Table.Td>
+                    </Table.Tr>
+                  )}
                 </Table.Tbody>
               </Table>
+              </ScrollArea>
                 </Paper>
               </Tabs.Panel>
 
