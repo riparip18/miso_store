@@ -35,7 +35,12 @@ function getKV(name) {
       },
     };
   } catch {
-    // Local persistent JSON fallback
+    const isProd = !!process.env.NETLIFY && !!process.env.DEPLOY_ID;
+    if (isProd) {
+      // In production, do not fall back to local filesystem (ephemeral)
+      throw new Error("Persistent store unavailable. Configure Netlify Blobs or NEON_DATABASE_URL.");
+    }
+    // Local persistent JSON fallback for dev only
     return {
       async get(key) {
         const obj = readLocal();
@@ -51,7 +56,18 @@ function getKV(name) {
 }
 
 export const handler = async (event) => {
-  const store = getKV("miso_store");
+  let store;
+  try {
+    store = getKV("miso_store");
+  } catch (e) {
+    const headers = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,POST,DELETE,OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Content-Type": "application/json",
+    };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
+  }
   const key = "inventory";
   // Initialize SQL client at runtime to avoid top-level await
   let sqlClient = null;
