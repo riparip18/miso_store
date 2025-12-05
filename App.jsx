@@ -248,6 +248,19 @@ export default function FishSalesApp() {
     return statusMatch && dateMatch && itemMatch;
   });
 
+  // --- Inventory search ---
+  const [inventoryQuery, setInventoryQuery] = useState('');
+  const filteredInventory = useMemo(() => {
+    const q = inventoryQuery.trim().toLowerCase();
+    if (!q) return inventory;
+    return inventory.filter((i) => i.name.toLowerCase().includes(q));
+  }, [inventory, inventoryQuery]);
+
+  // --- Sales total for filtered list ---
+  const salesTotal = useMemo(() => {
+    return filteredTransactions.reduce((sum, t) => sum + (t.price * t.qty), 0);
+  }, [filteredTransactions]);
+
   const exportCsv = () => {
     const headers = ['date','item','qty','price','status','total'];
     const rows = transactions.map(t => [t.date, t.item, t.qty, t.price, t.status, t.price * t.qty]);
@@ -582,6 +595,15 @@ export default function FishSalesApp() {
               </Table>
               </ScrollArea>
             </Paper>
+              {/* Sales total footer */}
+              <Group justify="flex-end" mt="sm" mb="md">
+                <Paper withBorder radius="md" px="md" py="xs" bg="white">
+                  <Group gap="sm">
+                    <Text fw={700} c="dimmed">Total</Text>
+                    <Text fw={900} c="dark">{toIDR(salesTotal)}</Text>
+                  </Group>
+                </Paper>
+              </Group>
               </Tabs.Panel>
 
           {/* --- TAB 2: INVENTORY --- */}
@@ -610,6 +632,17 @@ export default function FishSalesApp() {
                   </Group>
                 </Paper>
 
+              {/* Inventory search */}
+              <Paper withBorder radius="md" px="lg" py="md" bg="white" mb="md" shadow="sm">
+                <TextInput
+                  label="Search Inventory"
+                  placeholder="Type item name"
+                  value={inventoryQuery}
+                  onChange={(e) => setInventoryQuery(e.target.value)}
+                  radius="lg"
+                />
+              </Paper>
+
               <Paper withBorder radius="md" shadow="sm" overflow="hidden" bg="white">
               <Table highlightOnHover verticalSpacing="md" horizontalSpacing="lg" style={{ tableLayout: 'fixed' }}>
                 <Table.Thead style={{ background: '#f8f9fa' }}>
@@ -622,7 +655,7 @@ export default function FishSalesApp() {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {inventory.map((item) => (
+                  {filteredInventory.map((item) => (
                     <Table.Tr key={item.id}>
                       <Table.Td fw={600} size="sm">{item.name}</Table.Td>
                       <Table.Td c="dimmed" fw={600} ta="right">{item.qty} pcs</Table.Td>
