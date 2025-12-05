@@ -596,7 +596,7 @@ export default function FishSalesApp() {
                     <Table.Th fw={600} c="dark" style={{ textAlign: 'right', width: 70, position: 'sticky', top: 0, background: '#f8f9fa', zIndex: 1 }}>qty</Table.Th>
                     <Table.Th fw={600} c="dark" style={{ textAlign: 'right', width: 110, position: 'sticky', top: 0, background: '#f8f9fa', zIndex: 1 }}>Price</Table.Th>
                     <Table.Th fw={700} c="dark" style={{ textAlign: 'right', width: 120, position: 'sticky', top: 0, background: '#f8f9fa', zIndex: 1 }}>Total</Table.Th>
-                    <Table.Th fw={700} c="dark" style={{ textAlign: 'center', width: 90, position: 'sticky', top: 0, background: '#f8f9fa', zIndex: 1 }}>Status</Table.Th>
+                    <Table.Th fw={700} c="dark" style={{ textAlign: 'center', width: 110, position: 'sticky', top: 0, background: '#f8f9fa', zIndex: 1 }}>Status</Table.Th>
                     <Table.Th style={{ width: 48, position: 'sticky', top: 0, background: '#f8f9fa', zIndex: 2 }}></Table.Th>
                   </Table.Tr>
                 </Table.Thead>
@@ -614,7 +614,7 @@ export default function FishSalesApp() {
                           variant="filled"
                           size="md"
                           radius="xl"
-                          style={{ cursor: 'pointer', fontWeight: 600, textTransform: 'uppercase', fontSize: '10px', letterSpacing: '0.5px' }}
+                          style={{ cursor: 'pointer', fontWeight: 600, textTransform: 'uppercase', fontSize: '10px', letterSpacing: '0.5px', minWidth: '80px' }}
                           onClick={() => updateTransactionStatus(t.id)}
                         >
                           {t.status === 'Paid' ? 'Paid' : 'Pending'}
