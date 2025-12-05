@@ -1,4 +1,5 @@
 import { getStore } from "@netlify/blobs";
+import { neon } from "@neondatabase/serverless";
 import fs from "fs";
 import path from "path";
 // Fallback in-memory store with JSON persistence for local dev
@@ -67,12 +68,11 @@ export const handler = async (event) => {
     return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
   }
   const key = "transactions";
-  // Initialize SQL client at runtime to avoid top-level await
+  // Initialize SQL client when env present
   let sqlClient = null;
   const conn = process.env.NEON_DATABASE_URL;
   if (conn) {
     try {
-      const { neon } = await import("@neondatabase/serverless");
       sqlClient = neon(conn);
     } catch (e) {
       sqlClient = null;
