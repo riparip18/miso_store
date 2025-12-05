@@ -1,7 +1,56 @@
 import { getStore } from "@netlify/blobs";
+import fs from "fs";
+import path from "path";
+// Fallback in-memory store with JSON persistence for local dev
+const memory = new Map();
+const localDataFile = path.resolve(process.cwd(), "netlify", "local-data.json");
+
+function readLocal() {
+  try {
+    if (fs.existsSync(localDataFile)) {
+      const raw = fs.readFileSync(localDataFile, "utf-8");
+      return JSON.parse(raw || "{}");
+    }
+  } catch {}
+  return {};
+}
+
+function writeLocal(obj) {
+  try {
+    const dir = path.dirname(localDataFile);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(localDataFile, JSON.stringify(obj, null, 2), "utf-8");
+  } catch {}
+}
+
+function getKV(name) {
+  try {
+    const store = getStore({ name });
+    return {
+      async get(key) {
+        return await store.get(key);
+      },
+      async set(key, val) {
+        await store.set(key, val);
+      },
+    };
+  } catch {
+    return {
+      async get(key) {
+        const obj = readLocal();
+        return obj[`${name}:${key}`] ?? null;
+      },
+      async set(key, val) {
+        const obj = readLocal();
+        obj[`${name}:${key}`] = val;
+        writeLocal(obj);
+      },
+    };
+  }
+}
 
 export const handler = async (event) => {
-  const store = getStore({ name: "miso_store" });
+  const store = getKV("miso_store");
   const key = "transactions";
   // Initialize SQL client at runtime to avoid top-level await
   let sqlClient = null;

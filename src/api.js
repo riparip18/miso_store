@@ -1,4 +1,6 @@
-const base = "/.netlify/functions";
+const devBase = "http://localhost:8888/.netlify/functions";
+const prodBase = "/.netlify/functions";
+const base = import.meta.env.DEV ? devBase : prodBase;
 
 export const api = {
   async getInventory() {

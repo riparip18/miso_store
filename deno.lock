@@ -13,6 +13,7 @@
       "dependencies": [
         "npm:@mantine/core@^7.13.5",
         "npm:@mantine/hooks@^7.13.5",
+        "npm:@mantine/notifications@^7.13.5",
         "npm:@netlify/blobs@^6.4.0",
         "npm:@netlify/functions@^2.6.0",
         "npm:@tabler/icons-react@^3.19.0",

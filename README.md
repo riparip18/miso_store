@@ -1,3 +1,37 @@
+# miso_store – Dev Guide
+
+## Quick Start
+
+1. Install deps and Netlify CLI
+
+```powershell
+npm install
+npx netlify-cli --version
+```
+
+2. Run unified dev (functions + Vite)
+
+```powershell
+npx netlify dev
+```
+
+This starts Netlify Dev (port 8888) and your Vite app (port 5173). Requests to `/.netlify/functions/*` are proxied automatically (see `vite.config.js`).
+
+## Verifying APIs
+
+```powershell
+Invoke-WebRequest -Uri http://localhost:5173/.netlify/functions/inventory | Select-Object -Expand Content
+Invoke-WebRequest -Uri http://localhost:5173/.netlify/functions/transactions | Select-Object -Expand Content
+```
+
+## Persistent local data
+
+When Netlify Blobs isn’t available locally, functions persist to `netlify/local-data.json`. This keeps your inventory and transactions across restarts.
+
+## Common issues
+
+- If you run `npm run dev` alone, functions 404/ECONNREFUSED. Use `netlify dev`.
+- SPA refresh: handled in `netlify dev`. For production, `public/_redirects` includes `/* /index.html 200`.
 # miso_store
 
 Simple fish sales app with Netlify Functions backend.
