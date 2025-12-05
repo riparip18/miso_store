@@ -95,6 +95,32 @@ const theme = createTheme({
   }
 });
 
+function StorageStatus() {
+  const [status, setStatus] = useState(null);
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch('/.netlify/functions/health', { cache: 'no-store' });
+        const json = await res.json();
+        if (mounted) setStatus(json);
+      } catch (e) {
+        if (mounted) setStatus({ backend: 'unknown', db: { ok: false, error: e.message } });
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+  const backend = status?.backend;
+  const ok = status?.db?.ok;
+  const color = ok ? (backend === 'neon' ? 'indigo' : 'teal') : 'red';
+  const label = backend === 'neon' ? 'Neon DB' : backend === 'blobs' ? 'Netlify Blobs' : 'Storage';
+  return (
+    <Badge color={color} variant="light" radius="lg">
+      {label} {ok ? 'OK' : 'Error'} · {window.location.hostname}
+    </Badge>
+  );
+}
+
 // --- Main App Component ---
 export default function FishSalesApp() {
   // --- State Data Dummy Awal ---
@@ -123,6 +149,23 @@ export default function FishSalesApp() {
   const [newSale, setNewSale] = useState({ item: '', qty: 1, price: 0, status: 'Waiting', date: today });
   const [newStock, setNewStock] = useState({ name: '', qty: 0, buyPrice: 0 });
   const [editStock, setEditStock] = useState(null);
+        <Paper withBorder radius="md" px="md" py="xs" mb="md" shadow="sm">
+          <Group gap="sm">
+            <Text fw={700} c="dimmed">Storage</Text>
+            <StorageStatus />
+              <EnvStatus />
+          </Group>
+        </Paper>
+
+  function EnvStatus() {
+    const host = typeof window !== 'undefined' ? window.location.hostname : 'unknown';
+    const isProd = /netlify\.app$|\.netlify\.app$|vercel\.app$|\bdomain\b/.test(host) || host === 'localhost' ? false : true;
+    return (
+      <Badge color={isProd ? 'violet' : 'gray'} variant="outline" radius="lg">
+        {isProd ? 'Production' : 'Preview/Dev'} · {host}
+      </Badge>
+    );
+  }
   const [editOpen, setEditOpen] = useState(false);
   
   // Update harga otomatis ketika item dipilih
