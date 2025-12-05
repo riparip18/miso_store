@@ -1,17 +1,19 @@
+import { neon } from "@neondatabase/serverless";
+
 export const handler = async () => {
-  let using = "blobs";
+  const conn = process.env.NEON_DATABASE_URL;
+  let using = conn ? "neon" : "blobs";
   let db = null;
-  try {
-    const { neon } = await import("@neondatabase/serverless");
-    const conn = process.env.NEON_DATABASE_URL;
-    if (conn) {
+  if (conn) {
+    try {
       const sql = neon(conn);
       const res = await sql`select 1 as ok`;
-      using = "neon";
       db = { ok: res[0]?.ok === 1 };
+    } catch (e) {
+      db = { ok: false, error: e.message };
     }
-  } catch (e) {
-    db = { ok: false, error: e.message };
+  } else {
+    db = { ok: true };
   }
   return {
     statusCode: 200,
