@@ -1,6 +1,11 @@
+// Allow overriding backend base via env (e.g., your own API server)
+// Set VITE_API_BASE to something like "https://api.yourdomain.com" (without trailing slash)
+const override = import.meta.env.VITE_API_BASE;
 const devBase = "http://localhost:8888/.netlify/functions";
 const prodBase = "/.netlify/functions";
-const base = import.meta.env.DEV ? devBase : prodBase;
+const base = override
+  ? override
+  : (import.meta.env.DEV ? devBase : prodBase);
 
 export const api = {
   async getInventory() {
